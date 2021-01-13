@@ -10,6 +10,7 @@ class Module extends Function {
       entry = entry || {};
       if ( opt_fn ) entry.fn = opt_fn;
     }
+    modulef.entry = entry;
     modulef.init();
     return modulef;
   }
