@@ -54,7 +54,7 @@ describe('SDOP', () => {
       })
     })
 
-    var value;
+    var value = null;
     it('should produce target type', () => {
       value = r.get('TypeB', 'TestValue');
       expect(value).to.exist;
@@ -79,4 +79,39 @@ describe('SDOP', () => {
       expect(result.text).to.eql('Hello there');
     });
   });
+
+  describe('Reduce (module, high-level-test)', () => {
+    var c = SDOP.init();
+    var r = c.registry;
+
+    r.put('Registrar', 'TypeA');
+    r.put('Registrar', 'TypeB');
+    r.put('Registrar', 'TypeC');
+    r.put('Registrar', 'TypeD');
+
+    r.put('TypeA', 'TestValue', { a: 'hello' });
+    r.put('TypeB', 'TestValue', { b: 'yes' });
+    r.put('TypeC', 'TestValue', { c: 'this is dog' });
+
+    r.put('TypeA', 'AnotherTest', { a: 'hello' });
+
+    it('should put without errors', () => {
+      r.put('Reduce', ['TypeA','TypeB','TypeC'], 'TypeD', c => {
+        c.value = `${c.value[0].a}, ${c.value[1].b}; ${c.value[2].c}.`;
+        return c;
+      })
+    })
+    var value = null;
+    it('should produce target type', () => {
+      value = r.get('TypeD', 'TestValue');
+      expect(value).to.exist;
+    })
+    it('should convert to target type', () => {
+      expect(value).to.eql('hello, yes; this is dog.');
+    })
+    it('should not throw an exception on missing sources', () => {
+      value = r.get('TypeD', 'AnotherTest');
+      expect(value).not.to.exist;
+    })
+  })
 });
