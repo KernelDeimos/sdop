@@ -35,6 +35,10 @@ module.exports = new Module({
     {
       name: 'DefaultGet.return',
       fn: function (c) {
+        if ( ! c ) {
+          console.error('Common fault: undefined context at DefaultGet.return');
+          console.log(this.sequence);
+        }
         return c.value;
       }
     },
