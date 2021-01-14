@@ -32,6 +32,12 @@ module.exports = new Module({
         return c;
       }
     },
+    {
+      name: 'DefaultGet.return',
+      fn: function (c) {
+        return c.value;
+      }
+    },
   ]);
 
   var defaultPut = new Sequence([
@@ -48,6 +54,7 @@ module.exports = new Module({
       name: 'DefaultPut.store',
       fn: c => {
         c.self.data[c.name] = c.value;
+        return c;
       }
     }
   ]);
@@ -63,13 +70,14 @@ module.exports = new Module({
     },
     {
       name: 'Registrar.get',
-      fn: context => {
-        context.value = context.registry.getRegistrar(context.name);
+      fn: c => {
+        c.value = c.registry.getRegistrar(c.name);
+        return c;
       }
     },
     {
-      name: 'Registrar.value',
-      fn: context => context.value
+      name: 'Registrar.return',
+      fn: c => c.value
     }
   ]);
 
@@ -77,9 +85,9 @@ module.exports = new Module({
     {
       name: 'Registrar.args',
       fn: c => {
-        if ( c.args.length < 2 ) throw new Error('registrar put missing args');
+        if ( c.args.length < 1 ) throw new Error('registrar put missing args');
         c.name = c.args[0];
-        c.value = c.args[1];
+        c.value = c.args[1] || {}; // optional
         return c;
       }
     },
@@ -90,8 +98,14 @@ module.exports = new Module({
         var get_ = defaultGet.clone();
         var put_ = defaultPut.clone();
 
+        // TODO: DRY get and put
         if ( impl.get ) {
-          if ( typeof impl.get == 'function' ) {
+          if ( Array.isArray(impl.get) ) {
+            for ( let fn of impl.get ) {
+              get_.insertAfter('DefaultGet.value', fn);
+            }
+          }
+          else if ( typeof impl.get == 'function' ) {
             get_.insertAfter('DefaultGet.value', {
               name: 'custom',
               fn: impl.get.bind(impl)
@@ -102,7 +116,12 @@ module.exports = new Module({
           }
         }
         if ( impl.put ) {
-          if ( typeof impl.put == 'function' ) {
+          if ( Array.isArray(impl.put) ) {
+            for ( let fn of impl.put ) {
+              put_.insertBefore('DefaultPut.store', fn);
+            }
+          }
+          else if ( typeof impl.put == 'function' ) {
             put_.insertBefore('DefaultPut.store', {
               name: 'custom',
               fn: impl.put.bind(impl)
@@ -117,8 +136,10 @@ module.exports = new Module({
           data: {},
           impl: impl,
           init: function () {
-            if ( this.impl.init ) this.impl.init(this);
+            if ( this.impl.init ) this.impl.init({ ...context, self: this });
           },
+          get_: get_,
+          put_: put_,
           get: function (...args) {
             return get_({ ...context, self: this, args: args, });
           },
@@ -145,7 +166,7 @@ module.exports = new Module({
       }
     },
     {
-      name: 'Registrar.value',
+      name: 'Registrar.return',
       fn: context => context.value
     }
   ]);

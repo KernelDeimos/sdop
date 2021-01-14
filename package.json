@@ -3,10 +3,17 @@
   "version": "1.0.0",
   "description": "Structured Data Oriented Programming",
   "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
   "repository": "git@github.com:KernelDeimos/sdop.git",
   "author": "KernelDeimos <eric.alex.dube@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "nicepattern": "^1.0.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.2.1"
   }
 }

@@ -1,12 +1,11 @@
 const { Registry } = require('./constructs/Registry');
-var modules = {};
-modules.registrar = require('./modules/Registrar');
+var modules = require('./modules/index');
 
 class SDOP {
   static init() {
     var r = new Registry();
     var c = { registry: r };
-    modules.registrar(c);
+    modules.forEach(fn => fn(c));
     return c;
   }
   static fn_seq (f, reference) {
