@@ -1,4 +1,5 @@
 const { Registry } = require('./constructs/Registry');
+const { Module } = require('./constructs/Module');
 var modules = require('./modules/index');
 
 class SDOP {
@@ -15,4 +16,5 @@ class SDOP {
 
 module.exports = {
   SDOP: SDOP,
+  Module: Module,
 };

@@ -43,12 +43,14 @@ describe('SDOP', () => {
 
     r.put('Registrar', 'TypeA');
     r.put('Registrar', 'TypeB');
+    r.put('Registrar', 'TypeC');
 
     r.put('TypeA', 'TestValue', { notConverted: 'hello' });
 
     it('should put without errors', () => {
       r.put('Convert', 'TypeA', 'TypeB', c => {
         c.value = { converted: c.value.notConverted };
+        return c;
       })
     })
 
@@ -61,5 +63,20 @@ describe('SDOP', () => {
       expect(value).to.include.keys('converted');
       expect(value).not.to.include.keys('notConverted');
     })
-  })
+    it('should not throw an exception on missing sources', () => {
+      value = r.get('TypeC', 'TestValue');
+      expect(value).not.to.exist;
+    })
+  });
+  describe('TextTypes (module, high-level-test)', () => {
+    var c = SDOP.init();
+    var r = c.registry;
+
+    it('should work', () => {
+      r.put('sdop.text.Markdown', 'Test', 'Hello there');
+      var result = r.get('sdop.text.Markdown', 'Test');
+      console.log(result);
+      expect(result.text).to.eql('Hello there');
+    });
+  });
 });

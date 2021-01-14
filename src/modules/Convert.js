@@ -50,7 +50,7 @@ module.exports = new Module({
             fn: c => {
               if ( c.value ) return c.value;
               c.value = c.registry.get(c_.fromName, c.name);
-              if ( c.value ) c_.value(c);
+              if ( c.value ) return c_.value(c);
               return c;
             }
           });
