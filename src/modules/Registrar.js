@@ -48,9 +48,9 @@ module.exports = new Module({
     {
       name: 'DefaultPut.args',
       fn: c => {
-        if ( c.args.length < 2 ) throw new Error('put requires name and value');
+        if ( c.args.length < 1 ) throw new Error('put requires an argument');
         c.name = c.args[0];
-        c.value = c.args[1];
+        c.value = c.args[1] || {};
         return c;
       }
     },
@@ -158,7 +158,7 @@ module.exports = new Module({
     {
       name: 'Registrar.init',
       fn: context => {
-        context.value.init();
+        context.value.init(context);
         return context;
       }
     },
@@ -176,6 +176,7 @@ module.exports = new Module({
   ]);
 
   r.putRegistrar('Registrar', {
+    name: 'Registrar',
     get: (...args) => {
       var c = { ...c_, args: args };
       return registrarGet(c);

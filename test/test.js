@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 const { SDOP } = require('../src/index.js');
+const fs = require('fs').promises;
 
 describe('SDOP', () => {
   describe('Registrar (module, high-level-test)', () => {
@@ -75,7 +76,6 @@ describe('SDOP', () => {
     it('should work', () => {
       r.put('sdop.text.Markdown', 'Test', 'Hello there');
       var result = r.get('sdop.text.Markdown', 'Test');
-      console.log(result);
       expect(result.text).to.eql('Hello there');
     });
   });
@@ -114,4 +114,56 @@ describe('SDOP', () => {
       expect(value).not.to.exist;
     })
   })
+
+  describe('Journal (module, high-level-test)', () => {
+    var c = SDOP.init();
+    var r = c.registry;
+
+    // Ensure file
+    it('needs some setup', async () => {
+      try {
+        await fs.unlink('./test/outputs/test.jrl');
+      } catch {}
+      try {
+        await fs.writeFile('./test/outputs/test.jrl', '', { flag: 'wx' });
+      } catch {}
+    });
+
+    it('should create a journal', () => {
+      r.put('Journal', 'TestJournal', {
+        file: './test/outputs/test.jrl'
+      });
+    });
+
+    it('should create a collection', () => {
+      r.put('TestJournal', 'TestCollection');
+    });
+
+    it('should replay empty file', async () => {
+      await r.get('Journal', 'TestJournal', {}).replay(r);
+    });
+
+    it('should put to a collection', async () => {
+      await r.put('TestCollection', 'a', { v: 1 });
+      await r.put('TestCollection', 'b', { v: 2 });
+    });
+
+    it('should get from a collection', async () => {
+      var v = r.get('TestCollection', 'a');
+      expect(v).to.eql({ v: 1 });
+    });
+
+    it('should replay populated file', async () => {
+      var c = SDOP.init();
+      var r = c.registry;
+      r.put('Journal', 'TestJournal', {
+        file: './test/outputs/test.jrl'
+      });
+      r.put('TestJournal', 'TestCollection');
+      await r.get('Journal', 'TestJournal', {}).replay(r);
+      var val = r.get('TestCollection', 'a');
+      expect(val).to.eql({ v: 1 });
+    });
+
+  });
 });

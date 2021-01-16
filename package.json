@@ -2,7 +2,7 @@
   "name": "sdop",
   "version": "1.0.0",
   "description": "Structured Data Oriented Programming",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha"
   },
