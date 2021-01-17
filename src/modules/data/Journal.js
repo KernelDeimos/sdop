@@ -38,6 +38,7 @@ module.exports = new Module({
                   var collectionConfig = { ...c.value };
                   r.put('Registrar', c.name, {
                     put: [
+                      ...(c.util.opt_fn_array(collectionConfig.put)),
                       {
                         name: 'CollectionPut.filePut',
                         fn: c => {
