@@ -19,6 +19,7 @@ module.exports = new Module({
   var textConfig = () => ({ put: textPut });
 
   r.put('Registrar', 'sdop.text.Plain', textConfig());
+  r.put('Registrar', 'sdop.text.String', textConfig());
   r.put('Registrar', 'sdop.text.Markdown', textConfig());
   r.put('Registrar', 'sdop.text.HTML', textConfig());
   r.put('Registrar', 'sdop.text.JSON', textConfig());

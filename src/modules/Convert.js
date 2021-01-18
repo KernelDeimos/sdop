@@ -48,7 +48,7 @@ module.exports = new Module({
           getter.insertBefore('DefaultGet.return', {
             name: `Convert(${c.fromName})`,
             fn: c => {
-              if ( c.value ) return c.value;
+              if ( c.value ) return c;
               c.value = c.registry.get(c_.fromName, c.name);
               if ( c.value ) return c_.value(c);
               return c;
