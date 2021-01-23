@@ -46,9 +46,19 @@ module.exports = new Module({
         }
       },
       {
+        name: 'ReducePut.adaptFromNames',
+        fn: c => {
+          c.fromNames = c.name[0].map(entry => typeof entry == 'string'
+            ? { id: entry }
+            : entry
+          );
+          return c;
+        }
+      },
+      {
         name: 'ReducePut.store',
         fn: c => {
-          c.reduceSourceKey = JSON.stringify(c.name[0]);
+          c.reduceSourceKey = JSON.stringify(c.fromNames.map(v => v.id));
           var node = c.self.fromToMap;
           if ( ! node[c.reduceSourceKey] ) node[c.reduceSourceKey] = {};
           node = node[c.reduceSourceKey];
@@ -61,7 +71,7 @@ module.exports = new Module({
         fn: c => {
           var getter = c.registry.get('Registrar', c.name[1]).get_;
 
-          var fromNames = c.name[0];
+          var fromNames = c.fromNames;
           var toName = c.name[1];
           var reduceFn = c.value;
 
@@ -69,12 +79,17 @@ module.exports = new Module({
             name: `Reduce(${c.reduceSourceKey})`,
             fn: c => {
               if ( c.value ) return c.value;
-              var sources = fromNames.map(name => c.registry.get(name, c.name));
-              if ( sources.every(source => !! source) ) {
-                c.value = sources;
-                return reduceFn(c);
+              var sources = [];
+              for ( let fromName of fromNames ) {
+                var val = c.registry.get(fromName.id, c.name);
+                if ( ! val && ! fromName.optional ) {
+                  return c;
+                }
+                sources.push(val);
               }
-              return c;
+              // var sources = fromNames.map(name => c.registry.get(name, c.name));
+              c.value = sources;
+              return reduceFn(c);
             }
           });
           return c;
