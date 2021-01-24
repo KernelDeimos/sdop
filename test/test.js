@@ -166,4 +166,48 @@ describe('SDOP', () => {
     });
 
   });
+
+  describe('Middleware (module, high-level-test)', () => {
+    var c = SDOP.init();
+    var r = c.registry;
+    var testlist = [];
+    it('should put', () => {
+      r.put('Middleware', 'TestA', {
+        preFunc: () => {
+          testlist.push('A');
+        },
+        postFunc: () => {
+          testlist.push('B');
+        },
+      });
+      r.put('Middleware', 'TestB', {
+        preFunc: () => {
+          testlist.push('X');
+        },
+        postFunc: () => {
+          testlist.push('Y');
+        },
+      });
+    })
+    it('should put sequence', () => {
+      r.put('Sequence', 'TestSeq', {
+        middlewares: ['TestB', 'TestA'],
+        fn: [
+          {
+            name: 'PartA',
+            fn: () => { testlist.push('1'); }
+          },
+          {
+            name: 'PartB',
+            fn: () => { testlist.push('2'); }
+          }
+        ]
+      });
+    })
+    it('should run new sequence in order', () => {
+      var s = r.get('Sequence', 'TestSeq');
+      s();
+      expect(testlist).to.eql(['A','X','1','2','Y','B']);
+    })
+  });
 });
