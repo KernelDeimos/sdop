@@ -1,6 +1,7 @@
 const { Module } = require('../constructs/Module');
 
 module.exports = new Module({
+  id: 'sdop.uuid',
   documentation: `
     Adds sdop.uuid.gen4()
   `

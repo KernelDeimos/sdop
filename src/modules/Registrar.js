@@ -63,6 +63,42 @@ module.exports = new Module({
     }
   ]);
 
+  var defaultSelect = new Sequence([
+    {
+      name: 'DefaultSelect.args',
+      fn: c => {
+        if ( c.args.length >= 1 ) c.predicate = c.args[0];
+        return c;
+      },
+    },
+    {
+      name: 'DefaultSelect.generator',
+      fn: c => {
+        c.generator = (function* () {
+          for ( let k in c.self.data ) yield {
+            id: k,
+            value: c.self.data[k],
+          };
+        })();
+        return c;
+      }
+    },
+    {
+      name: 'DefaultSelect.applyPredicate',
+      fn: c => {
+        // TODO
+        return c;
+      }
+    },
+    {
+      name: 'DefaultSelect.collect',
+      fn: c => {
+        c.value = [...c.generator];
+        return c;
+      }
+    }
+  ]);
+
   var registrarGet = new Sequence([
     {
       name: 'Registrar.args',
@@ -101,6 +137,7 @@ module.exports = new Module({
         var impl = context.value;
         var get_ = defaultGet.clone();
         var put_ = defaultPut.clone();
+        var sel_ = defaultSelect.clone();
 
         // TODO: DRY get and put
         if ( impl.get ) {
@@ -144,12 +181,16 @@ module.exports = new Module({
           },
           get_: get_,
           put_: put_,
+          sel_: sel_,
           get: function (...args) {
             return get_({ ...context, self: this, args: args, });
           },
           put: function (...args) {
             return put_({ ...context, self: this, args: args, });
           },
+          sel: function (...args) {
+            return sel_({ ...context, self: this, args: args, });
+          }
         };
 
         return context;
@@ -175,6 +216,13 @@ module.exports = new Module({
     }
   ]);
 
+  var registrarSelect = defaultSelect.clone()
+    .replace('DefaultSelect.generator', c => {
+      c.generator = c.registry.getAllRegistrars();
+      return c;
+    })
+    ;
+
   r.putRegistrar('Registrar', {
     name: 'Registrar',
     get: (...args) => {
@@ -185,5 +233,9 @@ module.exports = new Module({
       var c = { ...c_, args: args };
       return registrarPut(c);
     },
+    sel: (...args) => {
+      var c = { ...c_, args: args };
+      return registrarSelect(c);
+    }
   });
 });

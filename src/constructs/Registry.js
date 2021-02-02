@@ -19,6 +19,15 @@ class Registry {
   getRegistrar (name) {
     return this.registrars_[name];
   }
+  getAllRegistrars () {
+    var self = this;
+    return (function* () {
+      for ( let k in self.registrars_ ) yield {
+        id: k,
+        value: self.registrars_[k],
+      };
+    })();
+  }
 }
 
 module.exports = {

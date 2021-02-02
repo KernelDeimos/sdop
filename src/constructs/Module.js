@@ -5,7 +5,7 @@ class Module extends Function {
     }
     Object.setPrototypeOf(modulef, Module.prototype);
     if ( typeof entry == 'function' ) {
-      modulef.entry = { fn: entry };
+      entry = { fn: entry };
     } else {
       entry = entry || {};
       if ( opt_fn ) entry.fn = opt_fn;
@@ -22,6 +22,10 @@ class Module extends Function {
   run (args) {
     if ( this.entry.fn ) {
       return this.entry.fn.bind(this)(...args);
+    }
+    if ( this.entry.id && args[0] && args[0].registry ) {
+      let r = args[0].registry;
+      r.put('Module', this.entry.id, this);
     }
   }
 }

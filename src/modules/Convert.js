@@ -49,6 +49,10 @@ module.exports = new Module({
             name: `Convert(${c.fromName})`,
             fn: c => {
               if ( c.value ) return c;
+              if ( ! c.registry ) {
+                console.log('?????', c.toString());
+                console.log(getter.chain);
+              }
               c.value = c.registry.get(c_.fromName, c.name);
               if ( c.value ) return c_.value(c);
               return c;

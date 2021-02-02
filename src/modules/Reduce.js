@@ -78,7 +78,7 @@ module.exports = new Module({
           getter.insertBefore('DefaultGet.return', {
             name: `Reduce(${c.reduceSourceKey})`,
             fn: c => {
-              if ( c.value ) return c.value;
+              if ( c.value ) return c;
               var sources = [];
               for ( let fromName of fromNames ) {
                 var val = c.registry.get(fromName.id, c.name);
