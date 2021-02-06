@@ -218,6 +218,8 @@ describe('SDOP', () => {
       expect(!! schema.getResolved(c)).to.eql(true);
     });
     describe('validation', () => {
+      var c = SDOP.init();
+      var r = c.registry;
       r.put('Schema', 'TestSchemaChild', {
         type: 'object',
         properties: {
@@ -270,5 +272,24 @@ describe('SDOP', () => {
         })
       }
     });
+    describe('registration', () => {
+      var c = SDOP.init();
+      var r = c.registry;
+      r.put('Schema', 'Test', {
+        type: 'object',
+        properties: {
+          myString: { type: 'string' }
+        }
+      });
+      r.put('Registrar', 'Test');
+      it('should validate schemas on put', () => {
+        expect(() => {
+          r.put('Test', 'A', { myString: 'Haiya' })
+        }).to.not.throw();
+        expect(() => {
+          r.put('Test', 'B', { myString: 1234 })
+        }).to.throw();
+      })
+    })
   });
 });

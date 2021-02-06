@@ -55,6 +55,18 @@ module.exports = new Module({
       }
     },
     {
+      name: 'DefaultPut.validate',
+      fn: c => {
+        var schema = c.registry.get('Schema', c.self.name);
+        if ( schema ) {
+          let result = schema.validate(c, c.value);
+          if ( ! result.valid ) throw new Error(
+            `schema invalid on ${c.self.name} for ${c.name}: ${result.message}`);
+        }
+        return c;
+      }
+    },
+    {
       name: 'DefaultPut.store',
       fn: c => {
         c.self.data[c.name] = c.value;
@@ -174,6 +186,7 @@ module.exports = new Module({
         }
 
         context.value = {
+          name: context.name,
           data: {},
           impl: impl,
           init: function () {
