@@ -210,4 +210,12 @@ describe('SDOP', () => {
       expect(testlist).to.eql(['A','X','1','2','Y','B']);
     })
   });
+  describe('Schema (module, high-level-test)', () => {
+    var c = SDOP.init();
+    var r = c.registry;
+    it('should work', () => {
+      var schema = r.get('Schema', 'sdop.model.Class');
+      expect(!! schema.getResolved(c)).to.eql(true);
+    });
+  });
 });

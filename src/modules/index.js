@@ -1,5 +1,6 @@
 module.exports = [
   'Registrar',
+  'schema/index',
   'Convert',
   'Reduce',
   'Middleware',
@@ -8,5 +9,6 @@ module.exports = [
   'Module',
   'TextTypes',
   'UUID',
+  'model/index',
   'data/Journal',
 ].map(name => require(`./${name}`));
