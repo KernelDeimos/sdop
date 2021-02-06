@@ -217,5 +217,58 @@ describe('SDOP', () => {
       var schema = r.get('Schema', 'sdop.model.Class');
       expect(!! schema.getResolved(c)).to.eql(true);
     });
+    describe('validation', () => {
+      r.put('Schema', 'TestSchemaChild', {
+        type: 'object',
+        properties: {
+          myString: { type: 'string' }
+        }
+      });
+      r.put('Schema', 'TestSchema', {
+        type: 'object',
+        properties: {
+          myArray: { type: 'array' },
+          myTest: { ref: 'TestSchemaChild' }
+        }
+      });
+      var schema = r.get('Schema', 'TestSchema');
+      it('should generate correct resolved schema', () => {
+        expect(schema.getResolved()).to.eql({
+          type: 'object',
+          properties: {
+            myArray: { type: 'array' },
+            myTest: {
+              type: 'object',
+              properties: {
+                myString: { type: 'string' }
+              }
+            }
+          }
+        });
+      });
+      var cases = [
+        {
+          name: 'simple success case',
+          valid: true,
+          input: { myArray: [1,2,3], myTest: { myString: 'Hello' } }
+        },
+        {
+          name: 'missing non-required property',
+          valid: true,
+          input: { myArray: [], myTest: {} }
+        },
+        {
+          name: 'object when expecting an array',
+          valid: false,
+          input: { myArray: { a: 1 }, myTest: { myString: 'Hello' } }
+        },
+      ];
+      for ( let tc of cases ) {
+        let result = schema.validate(c, tc.input);
+        it(`should ${tc.valid ? 'pass' : 'fail'} for: ${tc.name}`, () => {
+          expect(result.valid, result.message).to.eql(tc.valid);
+        })
+      }
+    });
   });
 });
