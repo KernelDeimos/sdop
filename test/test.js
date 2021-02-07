@@ -292,4 +292,45 @@ describe('SDOP', () => {
       })
     })
   });
+
+  describe('DSL (module, high-level-test)', () => {
+    it('should support long-form native port', () => {
+      var c = SDOP.init();
+      var r = c.registry;
+      r.put('DSL', 'Test', {
+        functions: {
+          and: {
+            args: [{ name: 'c', type: 'scope' }],
+            ports: [
+              {
+                language: 'javascript',
+                fn: c => {
+                  c.value = c.args.reduce((acc, v) => acc && v, true);
+                  return c;
+                }
+              }
+            ]
+          }
+        }
+      });
+      var dsl = r.get('DSL', 'Test');
+      var lib = dsl.toLibrary(c);
+      expect(lib.and(true, true)).to.equal(true);
+    });
+    it('should support short-form native port', () => {
+      var c = SDOP.init();
+      var r = c.registry;
+      r.put('DSL', 'Test', {
+        functions: {
+          and: c => {
+            c.value = c.args.reduce((acc, v) => acc && v, true);
+            return c;
+          }
+        }
+      });
+      var dsl = r.get('DSL', 'Test');
+      var lib = dsl.toLibrary(c);
+      expect(lib.and(true, true)).to.equal(true);
+    });
+  });
 });

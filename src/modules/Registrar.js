@@ -67,6 +67,13 @@ module.exports = new Module({
       }
     },
     {
+      name: 'DefaultPut.adapt',
+      fn: c => {
+        var adapt = c.registry.get('Adapt', c.self.name);
+        return adapt ? adapt(c) : c;
+      }
+    },
+    {
       name: 'DefaultPut.store',
       fn: c => {
         c.self.data[c.name] = c.value;

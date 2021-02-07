@@ -17,5 +17,11 @@ module.exports = new Module({}, c => {
     ]
   });
 
+  // TODO: this may be moved elsewhere
+  r.put('Registrar', 'Adapt');
+  r.put('Schema', 'Adapt', {
+    type: 'function'
+  });
+
   return c;
 });

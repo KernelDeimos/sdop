@@ -5,6 +5,9 @@ class Schema {
   }
 
   getResolved (c, portion) {
+    // Note: resolving also handles allOf, but anyOf and oneOf are not
+    //       processed until validation.
+
     var topLevel = ! portion;
     if ( topLevel && this.resolved ) return this.resolved;
 
@@ -44,6 +47,12 @@ class Schema {
       clone.additionalProperties = resolved;
     }
 
+    if ( clone.allOf ) {
+      for ( let schema of clone.allOf ) {
+        clone = this.combine_(clone, schema);
+      }
+    }
+
     if ( topLevel ) this.resolved = clone;
     return clone;
   }
@@ -57,6 +66,7 @@ class Schema {
         ( name == 'object' ) ? typeof obj == 'object' && ! Array.isArray(obj) :
         ( name == 'array' ) ? Array.isArray(obj) :
         ( name == 'string' ) ? typeof obj == 'string' :
+        ( name == 'function' ) ? typeof obj == 'function' :
         false
     };
     // TODO: make this a general-purpose function
@@ -71,6 +81,31 @@ class Schema {
         };
       }
     });
+
+    // Before anything, check for anyOf or oneOf
+    var trySubSchemas = (schema, list) => list.map(subSchema => {
+      var combinedSchema = this.combine_(schema, subSchema);
+      let result = this.validate(c, obj, combinedSchema);
+      return result.valid;
+    }).reduce((acc, b) => b ? acc + 1 : acc, 0);
+
+    var rmprop = (obj, prop) => {
+      var o = { ...obj };
+      delete o[prop];
+      return o;
+    };
+
+    if ( schema.anyOf ) {
+      if ( trySubSchemas(rmprop(schema, 'anyOf'), schema.anyOf) < 1 ) {
+        return lib.resultError(`anyOf didn't match anything`, obj);
+      }
+    }
+    if ( schema.oneOf ) {
+      let v = trySubSchemas(rmprop(schema, 'oneOf'), schema.oneOf);
+      if ( v != 1 ) {
+        return lib.resultError(`oneOf matched ${v} items`, obj);
+      }
+    }
 
     if ( schema.type && ! lib.typeMatch(schema.type, obj) )
       return lib.resultError(`type did not match ${schema.type}`, obj);
@@ -98,6 +133,49 @@ class Schema {
     }
 
     return { valid: true };
+  }
+
+  combine_ (portionA, portionB) {
+    if ( portionA.ref || portionB.ref ) {
+      throw new Error('internal error: attempt to combine unresolved schemas');
+    }
+
+    var schema = { ...portionA };
+    // Simple overrides
+    // TODO: some of these are not proper implementations. For example 'type'
+    //       can have a list of options that should be reduced when combining.
+    //       Although, I'm also not sure if I'm going to add support for that
+    //       considering anyOf already handles the case.
+
+    var supportedSimple = [
+      'type', 'item',
+      'items', // TODO: combining these is non-trivial; overriding for now
+    ]
+
+    for ( let k of supportedSimple ) {
+      if ( portionB[k] ) schema[k] = portionB[k];
+    }
+
+    // Recursive combines
+    if ( portionB.properties ) {
+      if ( ! schema.properties ) schema.properties = {};
+      else schema.properties = { ...schema.properties };
+      for ( let k in portionB.properties ) {
+        if ( ! schema.properties[k] )
+          schema.properties[k] = portionB.properties[k];
+        else schema.properties[k] =
+          this.combine_(schema.properties[k], portionB.properties[k]);
+      }
+    }
+    if ( portionB.additionalProperties ) {
+      if ( ! schema.additionalProperties )
+        schema.additionalProperties = portionB.additionalProperties;
+      else schema.additionalProperties =
+        this.combine_(schema.additionalProperties,
+          portionB.additionalProperties);
+    }
+
+    return schema;
   }
 }
 
