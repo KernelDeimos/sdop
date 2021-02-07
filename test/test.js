@@ -315,7 +315,7 @@ describe('SDOP', () => {
       });
       var dsl = r.get('DSL', 'Test');
       var lib = dsl.toLibrary(c);
-      expect(lib.and(true, true)).to.equal(true);
+      expect(lib.and(true, true)(c).value).to.equal(true);
     });
     it('should support short-form native port', () => {
       var c = SDOP.init();
@@ -330,7 +330,45 @@ describe('SDOP', () => {
       });
       var dsl = r.get('DSL', 'Test');
       var lib = dsl.toLibrary(c);
-      expect(lib.and(true, true)).to.equal(true);
+      expect(lib.and(true, true)(c).value).to.equal(true);
+    });
+    it('should propagate context', () => {
+      var c = SDOP.init();
+      var r = c.registry;
+      r.put('DSL', 'Test', {
+        functions: {
+          and: c => {
+            c.value = c.args.reduce((acc, v) => acc && v, true);
+            return c;
+          },
+          get: c => {
+            c.value = c.value[c.args[0]];
+            return c;
+          },
+          scope: {
+            preFunc: c => {
+              c.value = c.value[c.args[0]];
+              return c;
+            },
+            postFunc: c => {
+              c.value = c.args[1];
+              return c;
+            }
+          },
+          pass: c => c
+        }
+      });
+      var dsl = r.get('DSL', 'Test');
+      var l = dsl.toLibrary(c);
+      expect(l.and(true, true)(c).value).to.equal(true);
+
+      c = { ...c, value: { a: true, b: false, sub: { a: false, b: true } } };
+      l.and(l.get('a'), l.scope(l.and()))
+      let test1 = l.and(l.get('a'), l.scope('sub', l.get('b')));
+      let test2 = l.and(l.get('a'), l.scope('sub', l.get('a')));
+
+      expect(test1(c).value).to.eql(true);
+      expect(test2(c).value).to.eql(false);
     });
   });
 });

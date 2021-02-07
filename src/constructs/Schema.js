@@ -29,7 +29,7 @@ class Schema {
       }
     }
 
-    ['additionalProperties', 'items'].forEach(prop => {
+    ['additionalProperties', 'items', 'anyOf'].forEach(prop => {
       if ( clone[prop] ) {
         if ( Array.isArray(clone[prop]) ) {
           clone[prop] = [ ...clone[prop] ];

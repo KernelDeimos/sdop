@@ -71,6 +71,14 @@ module.exports = new Module({}, c => {
     ]
   });
 
+  r.put('Schema', 'sdop.model.Middleware', {
+    type: 'object',
+    properties: {
+      preFunc: { ref: 'sdop.model.Function' },
+      postFunc: { ref: 'sdop.model.Function' },
+    }
+  });
+
   r.put('Schema', 'sdop.model.Method', {
     ref: 'sdop.model.Function'
   });

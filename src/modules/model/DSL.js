@@ -10,7 +10,10 @@ module.exports = new Module({}, c => {
       functions: {
         type: 'object',
         additionalProperties: {
-          ref: 'sdop.model.Function'
+          anyOf: [
+            { ref: 'sdop.model.Function' },
+            { ref: 'sdop.model.Middleware' },
+          ]
         }
       }
     }
@@ -22,7 +25,25 @@ module.exports = new Module({}, c => {
       if ( typeof c.value.functions[k] == 'function' ) {
         c.value.functions[k] =
           fnAdapt({ ...c, value: c.value.functions[k] }).value;
+        continue;
       }
+      var mw = c.value.functions[k];
+      if ( mw.preFunc && mw.postFunc ) {
+        mw = { ...mw };
+        if ( typeof mw.preFunc == 'function' )
+          mw.preFunc = fnAdapt({ ...c, value: mw.preFunc }).value;
+        if ( typeof mw.postFunc == 'function' )
+          mw.postFunc = fnAdapt({ ...c, value: mw.postFunc }).value;
+        c.value.functions[k] = mw;
+      }
+    }
+    for ( let k in c.value.functions ) {
+      let modelFn = c.value.functions[k];
+      if ( modelFn.preFunc && modelFn.postFunc ) continue;
+      c.value.functions[k] = {
+        preFunc: fnAdapt({ ...c, value: c => c }).value,
+        postFunc: c.value.functions[k],
+      };
     }
     return c;
   })
