@@ -84,6 +84,17 @@ class Schema {
         if ( ! result.valid )
           return result.add(`error in property '${k}'`);
       }
+
+      var noAdditional = schema.additionalProperties === false;
+      if ( noAdditional ) for ( let k in obj ) {
+        if ( ! ( k in schema.properties ) ) return lib.resultError(
+          `no additional properties allowed`, obj);
+        //
+      } else if ( schema.additionalProperties ) for ( let k in obj ) {
+        let result = this.validate(c, obj[k], schema.additionalProperties);
+        if ( ! result.valid )
+          return result.add(`error in additional property '${k}'`);
+      }
     }
 
     return { valid: true };
