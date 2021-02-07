@@ -154,7 +154,7 @@ module.exports = new Module({
         // TODO: DRY get and put
         if ( impl.get ) {
           if ( Array.isArray(impl.get) ) {
-            for ( let fn of impl.get ) {
+            for ( let fn of impl.get.reverse() ) {
               get_.insertAfter('DefaultGet.value', fn);
             }
           }
