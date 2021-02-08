@@ -371,4 +371,16 @@ describe('SDOP', () => {
       expect(test2(c).value).to.eql(false);
     });
   });
+  describe('Context', () => {
+    const { Context } = require('../src/constructs/Context');
+    it('should work', () => {
+      var c1 = Context.create();
+      c1.a = 1;
+      c1.b = 2;
+      var c2 = c1.$sub({ c: 3 });
+      c2.d = 4
+      expect(c1).to.eql({ a: 1, b: 2 });
+      expect(c2).to.eql({ a: 1, b: 2, c: 3, d: 4 });
+    })
+  });
 });
