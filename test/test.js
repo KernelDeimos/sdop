@@ -383,4 +383,32 @@ describe('SDOP', () => {
       expect(c2).to.eql({ a: 1, b: 2, c: 3, d: 4 });
     })
   });
+  describe('Emitter', () => {
+    const { Emitter } = require('../src/constructs/Emitter');
+    it('should work', () => {
+      var e = new Emitter();
+      var log = [];
+      e.sub((a, b, c) => { log.push([a, b, c]); })
+      e.sub('a', (b, c) => { log.push(['A', b, c]); })
+      e.sub('a', 'b', c => { log.push(['A', 'B', c]); })
+      expect(log).to.eql([]);
+      e.pub('a','b','c');
+      expect(log).to.eql([
+        ['a','b','c'], ['A','b','c'], ['A','B','c']
+      ]);
+    })
+  });
+  describe('Topic', () => {
+    it('should work', () => {
+      var c = SDOP.init();
+      var r = c.registry;
+      var listened = null;
+      r.get('Topic', 'A', ['b.X', 'b.Y'], (c, d) => {
+        listened = [c,d];
+      })
+      r.put('Topic', 'B', ['b.Y', 'b.X'], 'Nope', 'No');
+      r.put('Topic', 'A', ['b.Y', 'b.X'], 'C', 'D');
+      expect(listened).to.eql(['C', 'D']);
+    })
+  });
 });

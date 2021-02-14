@@ -7,6 +7,7 @@ module.exports = [
   'Sequence',
   'Function',
   'Module',
+  'Topic',
   'TextTypes',
   'UUID',
   'model/index',
