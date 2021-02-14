@@ -258,4 +258,6 @@ module.exports = new Module({
       return registrarSelect(c);
     }
   });
+
+  r.put('Registrar', 'Data');
 });

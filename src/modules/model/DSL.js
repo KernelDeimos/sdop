@@ -46,7 +46,7 @@ module.exports = new Module({}, c => {
       };
     }
     return c;
-  })
+  });
 
   r.put('Registrar', 'DSL', {
     put: [
@@ -58,5 +58,46 @@ module.exports = new Module({}, c => {
         }
       }
     ]
+  });
+
+  r.put('DSL', 'GeneralPurposeLanguage', {
+    // documentation: `
+    //   A general purpose language defined using the DSL registrar. This is a good
+    //   way to include custom logic within data, because unlike callback functions
+    //   this can be meaningfully serialized.
+    // `,
+    // TODO: these functions don't validate their arguments
+    functions: {
+      pass: c => {
+        return c;
+      },
+      dot: c => {
+        for ( let a of c.args ) {
+          c.value = c.value[a];
+        }
+        return c;
+      },
+      cat: c => {
+        c.value = ''+c.args.join('');
+        return c;
+      },
+      get: c => {
+        c.value = c.registry.get(c.args[0], c.args[1]);
+        return c;
+      },
+      callArgs: c => {
+        var fn = c.args.shift();
+        c.value = fn(...c.args);
+        return c;
+      },
+      call: c => {
+        var fn = c.args.shift();
+        c.value = fn(c);
+        return c;
+      },
+      c: c => {
+        c.value = c;
+      },
+    }
   })
 });

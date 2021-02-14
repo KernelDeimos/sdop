@@ -3,8 +3,6 @@ const { Module } = require('../../constructs/Module');
 module.exports = new Module({}, c => {
   var r = c.registry;
 
-  require('./DSL')(c);
-
   r.put('Schema', 'sdop.model.ArgumentList', {
     type: 'array',
     default: [],
@@ -158,6 +156,8 @@ module.exports = new Module({}, c => {
   })
 
   r.put('Registrar', 'sdop.model.Class');
+
+  require('./DSL')(c);
 
   return c;
 });
