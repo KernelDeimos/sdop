@@ -1,4 +1,4 @@
-const { Module } = require('../constructs/Module');
+const { Module } = sdop_require('Module');
 const { Sequence } = require('nicepattern');
 
 module.exports = new Module({

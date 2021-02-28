@@ -1,33 +1,30 @@
 class Module extends Function {
-  constructor (entry, opt_fn) {
-    function modulef(...args) {
-      return modulef.run(args);
+  constructor(...args) {
+    function callable(...args) {
+      return callable.__sdop_call(...args);
     }
-    Object.setPrototypeOf(modulef, Module.prototype);
-    if ( typeof entry == 'function' ) {
-      entry = { fn: entry };
-    } else {
-      entry = entry || {};
-      if ( opt_fn ) entry.fn = opt_fn;
+    Object.setPrototypeOf(callable, Module.prototype);
+    if ( args.length == 1 ) {
+      callable["fn"] = args[0];
     }
-    modulef.entry = entry;
-    modulef.init();
-    return modulef;
+    if ( args.length == 2 ) {
+      for ( let k in args[0] ) {
+        callable[k] = args[0][k];
+      }
+      callable["fn"] = args[1];
+    }
+    return callable;
+    
   }
-
-  init () {
-    if ( this.entry.init ) this.entry.init.bind(this)();
-  }
-
-  run (args) {
-    if ( this.entry.fn ) {
-      return this.entry.fn.bind(this)(...args);
+  __sdop_call (context) {
+    if ( this.id && context.registry ) {
+      let r = context.registry;
+      r.put('Module', this.id, this);
     }
-    if ( this.entry.id && args[0] && args[0].registry ) {
-      let r = args[0].registry;
-      r.put('Module', this.entry.id, this);
+    if ( this.fn ) {
+      return this.fn(context);
     }
   }
+  
 }
-
-module.exports = { Module: Module };
+module.exports = { Module: Module }

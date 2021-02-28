@@ -11,5 +11,6 @@ module.exports = [
   'TextTypes',
   'UUID',
   'model/index',
+  'sdop/index',
   'data/Journal',
 ].map(name => require(`./${name}`));

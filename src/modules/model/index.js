@@ -1,4 +1,4 @@
-const { Module } = require('../../constructs/Module');
+const { Module } = sdop_require('Module');
 
 module.exports = new Module({}, c => {
   var r = c.registry;
@@ -45,6 +45,9 @@ module.exports = new Module({}, c => {
           args: {
             ref: 'sdop.model.ArgumentList',
           },
+          // WHEN: alternative to args for only one input
+          // input: { type: 'string' },
+          output: { type: 'string' },
           ports: {
             type: 'array',
             items: {
@@ -85,16 +88,21 @@ module.exports = new Module({}, c => {
     type: 'object',
     properties: {
       type: { type: 'string' },
+      // WHEN: Uncomment when 'adapt' is needed
+      // adapt: {
+      //   type: 'array',
+      //   default: [],
+      //   items: {
+      //     ref: 'sdop.model.Function'
+      //   }
+      // }
     }
   });
 
   r.put('Schema', 'sdop.model.Class', {
     type: 'object',
     properties: {
-      constructors: {
-        type: 'array',
-        items: { ref: 'sdop.model.Method' }
-      },
+      call: { ref: 'sdop.model.Method' },
       methods: {
         type: 'object',
         additionalProperties: { ref: 'sdop.model.Method' }

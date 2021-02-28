@@ -1,4 +1,4 @@
-const { Module } = require('../../constructs/Module');
+const { Module } = sdop_require('Module');
 const { Journal } = require('../../constructs/Journal');
 
 module.exports = new Module({

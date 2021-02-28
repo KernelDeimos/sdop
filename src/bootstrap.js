@@ -1,9 +1,10 @@
 const { Registry } = require('./constructs/Registry');
-const { Module } = require('./constructs/Module');
+const { Module } = require('./bootstrap/Module');
 const { Util } = require('./constructs/Util');
 const { Context } = require('./constructs/Context');
 
 global.sdop_require = path => {
+  if ( path == 'Module' ) return require('./bootstrap/Module');
   return require('./constructs/' + path)
 };
 

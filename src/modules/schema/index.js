@@ -1,4 +1,4 @@
-const { Module } = require('../../constructs/Module');
+const { Module } = sdop_require('Module');
 const { Schema } = require('../../constructs/Schema');
 
 module.exports = new Module({}, c => {

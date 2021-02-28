@@ -1,9 +1,17 @@
-const { Module } = require('../../constructs/Module');
+const { Module } = sdop_require('Module');
 
 module.exports = new Module({}, c => {
   var r = c.registry;
 
   r.put('sdop.model.Class', 'sdop.constructs.Module', {
+    properties: {
+      id: { type: 'string' },
+      fn: { type: 'function' },
+    },
+    constructors: [
+      ['fn'],
+      ['.', 'fn'],
+    ],
     call: {
       args: [
         { name: 'context', type: 'scope' },
@@ -12,12 +20,12 @@ module.exports = new Module({}, c => {
         {
           language: 'javascript',
           fn: function (context) {
-            if ( this.entry.fn ) {
-              return this.entry.fn(context);
-            }
-            if ( this.entry.id && context.registry ) {
+            if ( this.id && context.registry ) {
               let r = context.registry;
-              r.put('Module', this.entry.id, this);
+              r.put('Module', this.id, this);
+            }
+            if ( this.fn ) {
+              return this.fn(context);
             }
           }
         },
@@ -60,12 +68,6 @@ module.exports = new Module({}, c => {
         }]
       ]
     },
-    constructors: [
-      {
-        args: ['entry', 'fn'],
-
-      }
-    ]
   })
 
   return c;
