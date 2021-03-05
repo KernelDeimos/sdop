@@ -121,6 +121,11 @@ check-error@^1.0.2:
   resolved "https://registry.yarnpkg.com/check-error/-/check-error-1.0.2.tgz#574d312edd88bb5dd8912e9286dd6c0aed4aac82"
   integrity sha1-V00xLt2Iu13YkS6Sht1sCu1KrII=
 
+chindent@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/chindent/-/chindent-1.0.3.tgz#2a084c4bfbd82f758be03dba9fe83392625f4bbb"
+  integrity sha512-p0N8ZQnMZ/VY+zxAAr1+s1rkyn7DZQ/2bOtrF/DQyeOVZ2s0vGC4kSOAKc9NYopQYjPMgwHw0eHJV+dpJw0pkA==
+
 chokidar@3.4.3:
   version "3.4.3"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.4.3.tgz#c1df38231448e45ca4ac588e6c79573ba6a57d5b"
@@ -434,10 +439,10 @@ nanoid@3.1.12:
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.12.tgz#6f7736c62e8d39421601e4a0c77623a97ea69654"
   integrity sha512-1qstj9z5+x491jfiC4Nelk+f8XBad7LN20PmyWINJEMRSf3wcAjAWysw1qaA8z6NSKe2sjq1hRSDpBH5paCb6A==
 
-nicepattern@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/nicepattern/-/nicepattern-1.0.4.tgz#8d5c001fb09b584977017597bef73fae0d919488"
-  integrity sha512-mKtEi9P3ylZ8aE/+XDzRpBYaf3X4y4Nt4O+lSPlOsANod/ijnNLK+gK6PrY2++sveWKyHZMe+iH1a2DpFXeSRA==
+nicepattern@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/nicepattern/-/nicepattern-1.1.1.tgz#01abbeaf6e8fb8f1af9a0c97909e025ac6bd6056"
+  integrity sha512-0Z+RTrizqOHJGYr5ECczYulZaftNzmybJUcq0Pvq2+3HFR7bZOPNkZQTJWzrjegJBD7QDQG1gxKYmfJehdho7w==
   dependencies:
     dedent-js "^1.0.1"
 

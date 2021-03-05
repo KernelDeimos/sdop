@@ -30,44 +30,79 @@ module.exports = new Module({}, c => {
           }
         },
       ],
-      // This is an example; eventually this will be inferred from real code:
       at: [
         ['if', {
-          condition: ['in', ['iget', 'entry'], 'fn'],
-          alt: [
-            ['return',
-              ['call', {
-                fn: ['dot', ['iget', 'entry'], 'fn'],
-                arg: ['aget', 'args']
-              }]
-            ]
-          ]
-        }]
-        ['if', {
           condition: ['and',
-            ['in', ['iget', 'entry'], 'id'],
-            ['in', ['aget', 'context'], 'registry']
-          ],
+            ['ihas', 'id'],
+            ['in', ['aget', 'context'], 'registry']],
           at: [
             ['let', {
               symbols: {
-                r: ['dot', ['aget', 'context'], 'registry']
+                r: ['get', ['aget', 'context'], 'registry'],
               },
               at: [
-                ['call', {
-                  fn: ['dot', ['vget', 'r'], 'put'],
-                  args: ['list',
+                ['call_stmt', {
+                  fn: ['get', ['vget', 'r'], 'put'],
+                  args: [
                     ['string', 'Module'],
-                    ['dot', ['iget', 'entry'], 'id'],
-                    ['i'],
+                    ['iget', 'id'],
+                    ['instance'],
                   ]
                 }]
               ]
             }]
           ]
+        }],
+        ['if', {
+          condition: ['ihas', 'fn'],
+          at: [
+            ['return',
+              ['call', {
+                fn: ['iget', 'fn'],
+                args: [['aget', 'context']]
+              }]
+            ]
+          ]
         }]
       ]
+      // at: [
+      //   ['if', {
+      //     condition: ['ihas', 'id'],
+      //     at: [
+      //       ['iset', 'a', ['iget', 'id']]
+      //     ]
+      //   }]
+      // ],
     },
+  })
+
+  r.put('sdop.model.Class', 'sdop.constructs.Cursor', {
+    properties: {
+      buffer: {
+        type: 'string'
+      },
+      indentLevel: {
+        type: 'int'
+      },
+      indentChars: {
+        type: 'string',
+        default: '  '
+      }
+    },
+    methods: {
+      incr: { ports: [ {
+        language: 'javascript',
+        fn: function () { this.indentLevel++; }
+      } ] },
+      decr: { ports: [ {
+        language: 'javascript',
+        fn: function () { this.indentLevel--; }
+      } ] },
+      addBlock: { ports: [ {
+        language: 'javascript',
+        fn: function () {}
+      } ] }
+    }
   })
 
   return c;
