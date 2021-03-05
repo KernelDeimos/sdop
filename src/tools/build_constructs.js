@@ -49,16 +49,7 @@ class ES6Genner {
     ) {
       easyData = easyData[0];
     }
-    /*
-      STOPPED AT:
-        When applying generated code from a template command, it can't
-        just be appeneded to the output. It may be a block or list of
-        statements, in which case it needs to be in-place indented based
-        on the indentation at that point in the template.
 
-        This does not apply to 'expr' commands, which can always just be
-        appended to the output.
-    */
     var tmplAPI = {
       expr: node => {
         if ( typeof node === 'string' ) node = ['string', node];
@@ -248,10 +239,6 @@ var buildClass = cls => {
   `);
 }
 
-
-// generateFromNode = node => {
-//   node[0]
-// };
 
 var main = async () => {
   let m = r.get('sdop.target.es6.Class', 'sdop.constructs.Module');
