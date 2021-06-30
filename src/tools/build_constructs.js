@@ -239,8 +239,16 @@ var buildClass = cls => {
   `);
 }
 
+const GEN_PATH = './src/generated/';
 
 var main = async () => {
+  let res = r.get('Registrar', 'sdop.model.Class').sel();
+  for ( let val of res.value ) {
+    let filePath = `${GEN_PATH}${val.id.replace(/\./g, '/')}.js`;
+    console.log(filePath);
+  }
+  return;
+
   let m = r.get('sdop.target.es6.Class', 'sdop.constructs.Module');
   console.log(m);
   console.log(buildClass(m));
